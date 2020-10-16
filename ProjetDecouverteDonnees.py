@@ -38,7 +38,7 @@ for i in range(len(L)):
     plt.hist(datai)
     plt.title(L[i])
 #%% Import SQL
-
+import sqlite3
 con = sqlite3.connect("database.db")
 cur = con.cursor()
 
@@ -123,7 +123,7 @@ plt.show()
 
 from sklearn import svm
 
-regsvm=svm.SVR(kernel="rbf")
+regsvm=svm.SVR(kernel="linear")
 regsvm.fit(yearssk,price)
 pricesvm=regsvm.predict(yearssk)
 print(regsvm.score(yearssk,price))
