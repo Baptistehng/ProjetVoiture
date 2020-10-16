@@ -9,7 +9,7 @@ from app import server
 
 
 from app import app
-from layouts3 import layout3,layout4
+from layouts3 import layout3,layout4,layout5
 
 import callbacks
 
@@ -25,6 +25,8 @@ def display_page(pathname):
         return layout3
     elif pathname == '/apps/transmission':
         return layout4
+    elif pathname =='/apps/estimateur':
+        return layout5
     else:
         return '404'
 
