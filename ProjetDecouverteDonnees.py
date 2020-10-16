@@ -24,16 +24,35 @@ plt.hist(car_data["Year"])
 plt.show()
 #On constate qu'il ya énormemment de voiture de 2016
 
-#
-#%% 
+#Stats
 
-#cardata=car_data.to_sql("CarData",sqlalchemy.engine.Engine)
+L= ["Kms_Driven","Selling_Price","Present_Price"]
+L2=[car_data.Kms_Driven,car_data.Selling_Price,car_data.Present_Price]
+for i in range(len(L)):
+    datai=L2[i]
+    print("Moyenne "+ L[i]+": "+ str(np.mean(datai)))
+    print("Variance "+ L[i]+": "+str(np.var(datai)))
+    print("Min "+ L[i]+": "+str(np.min(datai)))
+    print("Max"+ L[i]+": "+str(np.max(datai)))
+    plt.figure()
+    plt.hist(datai)
+    plt.title(L[i])
+#%% Import SQL
+
+con = sqlite3.connect("database.db")
+cur = con.cursor()
+
+year_a_reshape = np.array(cur.execute("SELECT Year FROM cardata").fetchall())
+years=year_a_reshape.reshape(len(year_a_reshape))
+price_a_reshape =np.array(cur.execute("SELECT Selling_Price FROM cardata").fetchall())
+price=price_a_reshape.reshape(len(price_a_reshape))
+km_a_reshape =np.array(cur.execute("SELECT Kms_Driven FROM cardata").fetchall())
+km=km_a_reshape.reshape(len(km_a_reshape))
+trans_a_reshape =np.array(cur.execute("SELECT Transmission FROM cardata").fetchall())
+trans=trans_a_reshape.reshape(len(trans_a_reshape))
 
 
 #%%Regression linéaire
-
-years = car_data["Year"]
-price= car_data["Selling_Price"]
 
 
 #numpy
@@ -81,16 +100,38 @@ X = [[years[i],km[i],trans[i]] for i in range(len(years))]
 regmultiple = LinearRegression().fit(X,price)
 print(regmultiple.score(X,price))
 
+#La régression linéaire avec plusieurs variables est beaucoup plus
+#efficace que la régression avec deux variables.
+
+
 # %% classe crée
 
 from ClasseRL import RegLinManual
 import numpy as np
 
-regcree= RegLinManual()
-a,b=regcree.fit(years,price)
-priceman= [a*year + b for year in years]
+R=RegLinManual()
+R.fit(years,price)
+priceman=R.predict(years)
 plt.figure(4)
 plt.scatter(years,price)
 plt.plot(years,priceman,"y")
 plt.show()
+
+
+
+#%% Résolution par SVM
+
+from sklearn import svm
+
+regsvm=svm.SVR(kernel="rbf")
+regsvm.fit(yearssk,price)
+pricesvm=regsvm.predict(yearssk)
+print(regsvm.score(yearssk,price))
+plt.figure(5)
+plt.scatter(years,price)
+plt.plot(years,pricesvm,"r")
+plt.show()
+
+#On obtient un score moins élevé que pour la regression avec 2 variables
+
 
